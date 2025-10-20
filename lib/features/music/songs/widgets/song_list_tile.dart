@@ -22,6 +22,7 @@ class SongListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = CupertinoTheme.of(context).textTheme.textStyle.color;
     return GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
@@ -62,9 +63,7 @@ class SongListTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: isSelected
-                              ? CupertinoColors.white
-                              : CupertinoColors.black,
+                          color: isSelected ? CupertinoColors.white : textColor,
                         ),
                         maxLines: 1,
                       ),
@@ -73,7 +72,8 @@ class SongListTile extends StatelessWidget {
                         style: TextStyle(
                           color: isSelected
                               ? CupertinoColors.white
-                              : AppPalette.hintTextColor,
+                              : textColor?.withOpacity(0.7) ??
+                                    AppPalette.hintTextColor,
                         ),
                         maxLines: 1,
                       ),
@@ -84,9 +84,7 @@ class SongListTile extends StatelessWidget {
                   Icon(
                     CupertinoIcons.volume_up,
                     size: 18,
-                    color: isSelected
-                        ? CupertinoColors.white
-                        : CupertinoColors.black,
+                    color: isSelected ? CupertinoColors.white : textColor,
                   ),
               ],
             ),

@@ -13,6 +13,7 @@ import 'package:classipod/features/settings/models/click_wheel_size.dart';
 import 'package:classipod/features/settings/models/device_color.dart';
 import 'package:classipod/features/settings/models/repeat_mode.dart';
 import 'package:classipod/features/settings/models/settings_preferences_model.dart';
+import 'package:classipod/features/settings/models/theme_mode.dart';
 import 'package:classipod/features/settings/models/volume_mode.dart';
 import 'package:classipod/features/settings/repository/settings_preferences_repository.dart';
 import 'package:classipod/features/tutorial/controller/tutorial_controller.dart';
@@ -63,6 +64,9 @@ class SettingsPreferencesControllerNotifier
       ),
       splitScreenEnabled: settingsPreferencesRepository.getSplitScreenEnabled(),
       immersiveMode: settingsPreferencesRepository.getImmersiveMode(),
+      themeMode: ThemeMode.values.byName(
+        settingsPreferencesRepository.getThemeMode(),
+      ),
     );
   }
 
@@ -293,6 +297,23 @@ class SettingsPreferencesControllerNotifier
     await setSystemUiMode();
   }
 
+  Future<void> toggleThemeMode() async {
+    switch (state.themeMode) {
+      case ThemeMode.light:
+        await ref
+            .read(settingsPreferencesRepositoryProvider)
+            .setThemeMode(themeModeName: ThemeMode.dark.name);
+        state = state.copyWith(themeMode: ThemeMode.dark);
+        break;
+      case ThemeMode.dark:
+        await ref
+            .read(settingsPreferencesRepositoryProvider)
+            .setThemeMode(themeModeName: ThemeMode.light.name);
+        state = state.copyWith(themeMode: ThemeMode.light);
+        break;
+    }
+  }
+
   Future<void> rescanMusicFiles({bool clearPlaylists = false}) async {
     await Hive.box<MusicMetadata>(Constants.metadataBoxName).clear();
     if (clearPlaylists) {
@@ -326,6 +347,9 @@ class SettingsPreferencesControllerNotifier
     await ref
         .read(settingsPreferencesRepositoryProvider)
         .setImmersiveMode(isImmersiveModeEnabled: false);
+    await ref
+        .read(settingsPreferencesRepositoryProvider)
+        .setThemeMode(themeModeName: ThemeMode.light.name);
     ref.invalidateSelf();
   }
 

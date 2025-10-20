@@ -15,6 +15,7 @@ class DisplayListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = CupertinoTheme.of(context).textTheme.textStyle.color;
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
@@ -54,9 +55,7 @@ class DisplayListTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isSelected
-                          ? CupertinoColors.white
-                          : CupertinoColors.black,
+                      color: isSelected ? CupertinoColors.white : textColor,
                     ),
                     maxLines: 1,
                   ),

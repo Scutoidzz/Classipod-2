@@ -19,6 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 enum _SettingsDisplayItems {
   about,
+  theme,
   shuffle,
   repeat,
   language,
@@ -41,6 +42,8 @@ enum _SettingsDisplayItems {
     switch (this) {
       case about:
         return context.localization.aboutScreenTitle;
+      case theme:
+        return context.localization.themeSettingTitle;
       case shuffle:
         return context.localization.shuffleSettingTitle;
       case repeat:
@@ -103,6 +106,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     switch (settingItem) {
       case _SettingsDisplayItems.about:
         context.goNamed(Routes.about.name);
+        break;
+      case _SettingsDisplayItems.theme:
+        await ref
+            .read(settingsPreferencesControllerProvider.notifier)
+            .toggleThemeMode();
         break;
       case _SettingsDisplayItems.language:
         context.goNamed(Routes.language.name);
@@ -214,6 +222,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
     _SettingsDisplayItems settingsItem,
   ) {
     switch (settingsItem) {
+      case _SettingsDisplayItems.theme:
+        return settingsState.themeMode.title(context);
       case _SettingsDisplayItems.deviceColor:
         return settingsState.deviceColor.title(context);
       case _SettingsDisplayItems.clickWheelSize:
@@ -240,6 +250,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
   Future<void> _changeSplitScreenType() async {
     await Future.delayed(const Duration(milliseconds: 150));
     switch (displayItems[selectedDisplayItem]) {
+      case _SettingsDisplayItems.theme:
+        ref.read(splitScreenControllerProvider.notifier).changeSplitScreenType =
+            SplitScreenType.settings;
+        break;
       case _SettingsDisplayItems.language:
         ref.read(splitScreenControllerProvider.notifier).changeSplitScreenType =
             SplitScreenType.language;

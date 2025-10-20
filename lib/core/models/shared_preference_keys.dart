@@ -10,6 +10,7 @@ enum SharedPreferencesKeys {
   volumeMode,
   splitScreenEnabled,
   immersiveMode,
+  themeMode,
   isMenuFirstTime,
   isNowPlayingFirstTime,
   isInputTextBarFirstTime,

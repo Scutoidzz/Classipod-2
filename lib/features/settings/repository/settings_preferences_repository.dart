@@ -5,6 +5,7 @@ import 'package:classipod/features/settings/models/click_wheel_sensitivity.dart'
 import 'package:classipod/features/settings/models/click_wheel_size.dart';
 import 'package:classipod/features/settings/models/device_color.dart';
 import 'package:classipod/features/settings/models/repeat_mode.dart';
+import 'package:classipod/features/settings/models/theme_mode.dart';
 import 'package:classipod/features/settings/models/volume_mode.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -98,6 +99,13 @@ class SettingsPreferencesRepository {
         false;
   }
 
+  String getThemeMode() {
+    return _sharedPreferencesWithCache.getString(
+          SharedPreferencesKeys.themeMode.name,
+        ) ??
+        ThemeMode.light.name;
+  }
+
   Future<void> setLanguageLocaleCode({
     required String languageLocaleCode,
   }) async {
@@ -182,6 +190,13 @@ class SettingsPreferencesRepository {
     return _sharedPreferencesWithCache.setBool(
       SharedPreferencesKeys.immersiveMode.name,
       isImmersiveModeEnabled,
+    );
+  }
+
+  Future<void> setThemeMode({required String themeModeName}) async {
+    return _sharedPreferencesWithCache.setString(
+      SharedPreferencesKeys.themeMode.name,
+      themeModeName,
     );
   }
 }

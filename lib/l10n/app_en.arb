@@ -430,5 +430,17 @@
   "excludeDirectoriesScreenTitle": "Exclude Directories",
   "@excludeDirectoriesScreenTitle": {
     "description": "The title of the exclude directories screen"
+  },
+  "themeSettingTitle": "Theme",
+  "@themeSettingTitle": {
+    "description": "The title of the theme setting"
+  },
+  "lightThemeMode": "Light",
+  "@lightThemeMode": {
+    "description": "The text for light theme mode"
+  },
+  "darkThemeMode": "Dark",
+  "@darkThemeMode": {
+    "description": "The text for dark theme mode"
   }
 }

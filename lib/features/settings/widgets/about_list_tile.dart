@@ -11,6 +11,7 @@ class AboutListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = CupertinoTheme.of(context).textTheme.textStyle.color;
     return SizedBox(
       height: 30,
       width: double.infinity,
@@ -19,18 +20,18 @@ class AboutListTile extends StatelessWidget {
         children: [
           Text(
             titleText,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: CupertinoColors.black,
+              color: textColor,
             ),
           ),
           Text(
             valueText,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: CupertinoColors.black,
+              color: textColor,
             ),
           ),
         ],

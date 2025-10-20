@@ -16,7 +16,13 @@ class ClassipodApp extends ConsumerWidget {
         (value) => value.languageLocaleCode,
       ),
     );
+    final themeMode = ref.watch(
+      settingsPreferencesControllerProvider.select((value) => value.themeMode),
+    );
     final router = ref.watch(routerProvider);
+
+    final isDarkMode = themeMode.brightness == Brightness.dark;
+
     return CupertinoApp.router(
       onGenerateTitle: (context) => context.localization.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -24,15 +30,23 @@ class ClassipodApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: router,
       locale: Locale(languageLocaleCode),
-      theme: const CupertinoThemeData(
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: CupertinoColors.white,
+      theme: CupertinoThemeData(
+        brightness: themeMode.brightness,
+        scaffoldBackgroundColor: isDarkMode
+            ? CupertinoColors.black
+            : CupertinoColors.white,
         textTheme: CupertinoTextThemeData(
           textStyle: TextStyle(
-            color: CupertinoColors.black,
+            color: isDarkMode ? CupertinoColors.white : CupertinoColors.black,
             fontFamily: Assets.helveticaFont,
           ),
         ),
+        primaryColor: isDarkMode
+            ? CupertinoColors.white
+            : CupertinoColors.black,
+        barBackgroundColor: isDarkMode
+            ? CupertinoColors.black
+            : CupertinoColors.white,
       ),
     );
   }

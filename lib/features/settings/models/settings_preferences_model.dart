@@ -2,6 +2,7 @@ import 'package:classipod/features/settings/models/click_wheel_sensitivity.dart'
 import 'package:classipod/features/settings/models/click_wheel_size.dart';
 import 'package:classipod/features/settings/models/device_color.dart';
 import 'package:classipod/features/settings/models/repeat_mode.dart';
+import 'package:classipod/features/settings/models/theme_mode.dart';
 import 'package:classipod/features/settings/models/volume_mode.dart';
 
 class SettingsPreferencesModel {
@@ -16,6 +17,7 @@ class SettingsPreferencesModel {
   final VolumeMode volumeMode;
   final bool splitScreenEnabled;
   final bool immersiveMode;
+  final ThemeMode themeMode;
   final bool fetchOnlineMusic;
 
   SettingsPreferencesModel({
@@ -30,6 +32,7 @@ class SettingsPreferencesModel {
     required this.volumeMode,
     required this.splitScreenEnabled,
     required this.immersiveMode,
+    required this.themeMode,
     this.fetchOnlineMusic = false,
   });
 
@@ -45,6 +48,7 @@ class SettingsPreferencesModel {
     VolumeMode? volumeMode,
     bool? splitScreenEnabled,
     bool? immersiveMode,
+    ThemeMode? themeMode,
     bool? fetchOnlineMusic,
   }) {
     return SettingsPreferencesModel(
@@ -60,6 +64,7 @@ class SettingsPreferencesModel {
       volumeMode: volumeMode ?? this.volumeMode,
       splitScreenEnabled: splitScreenEnabled ?? this.splitScreenEnabled,
       immersiveMode: immersiveMode ?? this.immersiveMode,
+      themeMode: themeMode ?? this.themeMode,
       fetchOnlineMusic: fetchOnlineMusic ?? this.fetchOnlineMusic,
     );
   }
@@ -78,6 +83,7 @@ class SettingsPreferencesModel {
         other.volumeMode == volumeMode &&
         other.splitScreenEnabled == splitScreenEnabled &&
         other.immersiveMode == immersiveMode &&
+        other.themeMode == themeMode &&
         other.fetchOnlineMusic == fetchOnlineMusic;
   }
 
@@ -94,6 +100,7 @@ class SettingsPreferencesModel {
     volumeMode,
     splitScreenEnabled,
     immersiveMode,
+    themeMode,
     fetchOnlineMusic,
   );
 }

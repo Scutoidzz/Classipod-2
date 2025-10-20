@@ -4,6 +4,7 @@ import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:classipod/core/navigation/routes.dart';
 import 'package:classipod/features/app_startup/screens/app_startup_screen.dart';
 import 'package:classipod/features/settings/controller/settings_preferences_controller.dart';
+import 'package:classipod/features/settings/models/theme_mode.dart';
 import 'package:classipod/l10n/generated/app_localizations.dart';
 import 'package:device_preview_plus/device_preview_plus.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,6 +45,11 @@ class DevelopmentClassipodApp extends ConsumerWidget {
         (value) => value.languageLocaleCode,
       ),
     );
+    final appThemeMode = ref.watch(
+      settingsPreferencesControllerProvider.select(
+        (value) => value.themeMode,
+      ),
+    );
     final router = ref.watch(routerProvider);
     final debuggerTools = ref.watch(debuggerToolsProvider);
     debugRepaintRainbowEnabled = debuggerTools.debugRepaintRainbowEnabled;
@@ -64,7 +70,15 @@ class DevelopmentClassipodApp extends ConsumerWidget {
       checkerboardRasterCacheImages:
           debuggerTools.checkerboardRasterCacheImages,
       routerConfig: router,
-      theme: const CupertinoThemeData(
+      theme: _cupertinoThemeFrom(appThemeMode),
+    );
+  }
+}
+
+CupertinoThemeData _cupertinoThemeFrom(AppThemeMode mode) {
+  switch (mode) {
+    case AppThemeMode.light:
+      return const CupertinoThemeData(
         brightness: Brightness.light,
         scaffoldBackgroundColor: CupertinoColors.white,
         textTheme: CupertinoTextThemeData(
@@ -73,8 +87,29 @@ class DevelopmentClassipodApp extends ConsumerWidget {
             fontFamily: Assets.helveticaFont,
           ),
         ),
-      ),
-    );
+      );
+    case AppThemeMode.dark:
+      return const CupertinoThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: CupertinoColors.black,
+        textTheme: CupertinoTextThemeData(
+          textStyle: TextStyle(
+            color: CupertinoColors.white,
+            fontFamily: Assets.helveticaFont,
+          ),
+        ),
+      );
+    case AppThemeMode.system:
+      return const CupertinoThemeData(
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: CupertinoColors.white,
+        textTheme: CupertinoTextThemeData(
+          textStyle: TextStyle(
+            color: CupertinoColors.black,
+            fontFamily: Assets.helveticaFont,
+          ),
+        ),
+      );
   }
 }
 

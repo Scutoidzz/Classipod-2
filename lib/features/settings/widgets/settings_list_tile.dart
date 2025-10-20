@@ -18,6 +18,15 @@ class SettingsListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = CupertinoTheme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = isSelected
+        ? CupertinoColors.white
+        : (isDark ? CupertinoColors.white : CupertinoColors.black);
+    final valueColor = isSelected
+        ? CupertinoColors.white
+        : (isDark ? CupertinoColors.systemGrey : AppPalette.hintTextColor);
+    final iconColor = CupertinoColors.white;
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
@@ -53,9 +62,7 @@ class SettingsListTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isSelected
-                          ? CupertinoColors.white
-                          : CupertinoColors.black,
+                      color: textColor,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -66,15 +73,13 @@ class SettingsListTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isSelected
-                          ? CupertinoColors.white
-                          : AppPalette.hintTextColor,
+                      color: valueColor,
                     ),
                   ),
                 if (value == null && isSelected)
-                  const Icon(
+                  Icon(
                     CupertinoIcons.right_chevron,
-                    color: CupertinoColors.white,
+                    color: iconColor,
                   ),
               ],
             ),
