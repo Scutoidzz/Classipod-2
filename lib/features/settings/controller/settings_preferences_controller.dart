@@ -308,6 +308,12 @@ class SettingsPreferencesControllerNotifier
       case ThemeMode.dark:
         await ref
             .read(settingsPreferencesRepositoryProvider)
+            .setThemeMode(themeModeName: ThemeMode.system.name);
+        state = state.copyWith(themeMode: ThemeMode.system);
+        break;
+      case ThemeMode.system:
+        await ref
+            .read(settingsPreferencesRepositoryProvider)
             .setThemeMode(themeModeName: ThemeMode.light.name);
         state = state.copyWith(themeMode: ThemeMode.light);
         break;

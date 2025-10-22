@@ -1,10 +1,11 @@
 import 'package:classipod/core/constants/assets.dart';
+import 'package:classipod/core/constants/app_palette.dart';
 import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:classipod/core/navigation/routes.dart';
 import 'package:classipod/features/settings/controller/settings_preferences_controller.dart';
-import 'package:classipod/l10n/generated/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:classipod/l10n/generated/app_localizations.dart';
 
 class ClassipodApp extends ConsumerWidget {
   const ClassipodApp({super.key});
@@ -32,8 +33,9 @@ class ClassipodApp extends ConsumerWidget {
       locale: Locale(languageLocaleCode),
       theme: CupertinoThemeData(
         brightness: themeMode.brightness,
+        // Use a softer, iOS-like dark gray instead of pitch black
         scaffoldBackgroundColor: isDarkMode
-            ? CupertinoColors.black
+            ? AppPalette.darkDeviceControlBackgroundColor
             : CupertinoColors.white,
         textTheme: CupertinoTextThemeData(
           textStyle: TextStyle(
@@ -45,7 +47,7 @@ class ClassipodApp extends ConsumerWidget {
             ? CupertinoColors.white
             : CupertinoColors.black,
         barBackgroundColor: isDarkMode
-            ? CupertinoColors.black
+            ? AppPalette.darkDeviceControlBackgroundColor
             : CupertinoColors.white,
       ),
     );

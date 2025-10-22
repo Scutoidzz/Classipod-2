@@ -38,6 +38,7 @@ class StatusBar extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
+                    color: AppPalette.statusBarBorderColor,
                   ),
                   maxLines: 1,
                 ),

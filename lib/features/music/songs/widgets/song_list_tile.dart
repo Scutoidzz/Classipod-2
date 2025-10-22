@@ -72,8 +72,7 @@ class SongListTile extends StatelessWidget {
                         style: TextStyle(
                           color: isSelected
                               ? CupertinoColors.white
-                              : textColor?.withOpacity(0.7) ??
-                                    AppPalette.hintTextColor,
+                              : AppPalette.hintTextColor,
                         ),
                         maxLines: 1,
                       ),
@@ -81,10 +80,10 @@ class SongListTile extends StatelessWidget {
                   ),
                 ),
                 if (isCurrentlyPlaying)
-                  Icon(
+                  const Icon(
                     CupertinoIcons.volume_up,
                     size: 18,
-                    color: isSelected ? CupertinoColors.white : textColor,
+                    color: CupertinoColors.white,
                   ),
               ],
             ),
