@@ -35,6 +35,7 @@ enum _SettingsDisplayItems {
   showAppTutorial,
   rescanMusicFiles,
   excludeDirectories,
+  userMusicFolders,
   resetSettings,
   donate;
 
@@ -76,6 +77,8 @@ enum _SettingsDisplayItems {
         return context.localization.resetSettingsTitle;
       case excludeDirectories:
         return context.localization.excludeDirectoriesScreenTitle;
+      case userMusicFolders:
+        return 'Add Music Folders';
       case donate:
         return context.localization.donateSettingTitle;
     }
@@ -178,6 +181,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen>
         break;
       case _SettingsDisplayItems.excludeDirectories:
         context.goNamed(Routes.excludeDirectories.name);
+        break;
+      case _SettingsDisplayItems.userMusicFolders:
+        context.goNamed(Routes.userMusicFolders.name);
         break;
       case _SettingsDisplayItems.resetSettings:
         await ref

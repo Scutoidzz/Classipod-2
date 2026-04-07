@@ -35,6 +35,7 @@ import 'package:classipod/features/settings/screens/device_color_selection_scree
 import 'package:classipod/features/settings/screens/exclude_directories_screen.dart';
 import 'package:classipod/features/settings/screens/language_selection_screen.dart';
 import 'package:classipod/features/settings/screens/settings_preferences_screen.dart';
+import 'package:classipod/features/settings/screens/user_music_folders_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -47,6 +48,7 @@ enum Routes {
   language,
   deviceColor,
   excludeDirectories,
+  userMusicFolders,
   nowPlaying,
   nowPlayingMoreOptions,
   musicMenu,
@@ -92,6 +94,8 @@ enum Routes {
         return context.localization.deviceColorSettingTitle;
       case excludeDirectories:
         return context.localization.excludeDirectoriesScreenTitle;
+      case userMusicFolders:
+        return 'Music Folders';
       case nowPlaying:
         return context.localization.nowPlayingScreenTitle;
       case nowPlayingMoreOptions:
@@ -242,6 +246,14 @@ final routerProvider = Provider(
                         },
                         pageBuilder: (context, state) => const CupertinoPage(
                           child: ExcludeDirectoriesScreen(),
+                        ),
+                      ),
+                      GoRoute(
+                        path: Routes.userMusicFolders.name,
+                        name: Routes.userMusicFolders.name,
+                        parentNavigatorKey: rootNavigatorKey,
+                        pageBuilder: (context, state) => const CupertinoPage(
+                          child: UserMusicFoldersScreen(),
                         ),
                       ),
                     ],

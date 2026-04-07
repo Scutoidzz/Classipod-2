@@ -8,6 +8,7 @@ import 'package:classipod/core/models/music_metadata.dart';
 import 'package:classipod/core/providers/device_directory_provider.dart';
 import 'package:classipod/core/repositories/metadata_reader_repository.dart';
 import 'package:classipod/features/settings/controller/settings_preferences_controller.dart';
+import 'package:classipod/features/settings/controller/user_music_folders_controller.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -103,6 +104,64 @@ class AudioFilesServiceNotifier
       }
     } catch (e) {
       return UnmodifiableListView([]);
+    }
+  }
+
+  Future<void> addMusicFolderAndScan(
+    String folderPath,
+    String folderName,
+  ) async {
+    try {
+      // Add folder to user music folders
+      await ref
+          .read(userMusicFoldersProvider.notifier)
+          .addMusicFolder(
+            folderPath: folderPath,
+            folderName: folderName,
+          );
+
+      // Extract metadata from the folder
+      final result = await compute(
+        ref
+            .read(metadataReaderRepositoryProvider)
+            .extractMetadataFromDirectory,
+        folderPath,
+      );
+
+      // Add to metadata box
+      final metadataBox = Hive.box<MusicMetadata>(Constants.metadataBoxName);
+      final uniqueResults = result.where((metadata) {
+        return !metadataBox.values.any(
+          (existing) => existing.filePath == metadata.filePath,
+        );
+      }).toList();
+
+      await metadataBox.addAll(uniqueResults);
+
+      // Refresh the provider
+      state = AsyncValue.data(
+        UnmodifiableListView(metadataBox.values),
+      );
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
+
+  Future<void> removeMusicFolderAndRefresh(dynamic folderKey) async {
+    try {
+      // Remove folder
+      await ref
+          .read(userMusicFoldersProvider.notifier)
+          .removeMusicFolder(folderKey: folderKey);
+
+      // Refresh metadata - you might want to clear and rescan,
+      // or keep existing files. For now, we'll keep them.
+      final metadataBox = Hive.box<MusicMetadata>(Constants.metadataBoxName);
+      state = AsyncValue.data(
+        UnmodifiableListView(metadataBox.values),
+      );
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
     }
   }
 }
