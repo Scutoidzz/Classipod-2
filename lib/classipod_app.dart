@@ -20,7 +20,7 @@ class ClassipodApp extends ConsumerWidget {
     );
     final router = ref.watch(routerProvider);
     return CupertinoApp.router(
-      onGenerateTitle: (context) => context.localization.appTitle,
+      onGenerateTitle: (context) => AppLocalizations.of(context)?.appTitle ?? '',
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,

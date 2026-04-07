@@ -114,6 +114,7 @@ class SettingsPreferencesControllerNotifier
             .read(settingsPreferencesRepositoryProvider)
             .setAppRepeatMode(repeatModeName: AppRepeatMode.all.name);
         state = state.copyWith(repeatMode: AppRepeatMode.all);
+        break;
       case AppRepeatMode.all:
         await ref
             .read(audioPlayerServiceProvider.notifier)

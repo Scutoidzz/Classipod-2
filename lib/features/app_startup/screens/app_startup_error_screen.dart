@@ -19,6 +19,7 @@ class AppStartupError extends StatelessWidget {
       home: CupertinoPageScaffold(
         child: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 '${AppLocalizations.of(context)?.commonErrorText ?? ''} $error',
