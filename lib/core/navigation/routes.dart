@@ -30,7 +30,9 @@ import 'package:classipod/features/music/songs/screens/songs_screen.dart';
 import 'package:classipod/features/now_playing/screen/now_playing_more_options_modal.dart';
 import 'package:classipod/features/now_playing/screen/now_playing_screen.dart';
 import 'package:classipod/features/settings/controller/settings_preferences_controller.dart';
+import 'package:classipod/features/settings/repository/settings_preferences_repository.dart';
 import 'package:classipod/features/settings/screens/about_screen.dart';
+import 'package:classipod/features/setup/screens/setup_screen.dart';
 import 'package:classipod/features/settings/screens/device_color_selection_screen.dart';
 import 'package:classipod/features/settings/screens/exclude_directories_screen.dart';
 import 'package:classipod/features/settings/screens/language_selection_screen.dart';
@@ -40,6 +42,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 enum Routes {
+  setup,
   splash,
   menu,
   settings,
@@ -78,6 +81,8 @@ enum Routes {
 
   String title(BuildContext context) {
     switch (this) {
+      case setup:
+        return "";
       case splash:
         return "";
       case menu:
@@ -152,6 +157,13 @@ final splitScreenViewControllerProvider = Provider<SplitScreenViewController>((
 final routerProvider = Provider(
   (ref) => GoRouter(
     initialLocation: Routes.splash.toString(),
+    redirect: (context, state) {
+      if (state.matchedLocation == Routes.setup.toString()) return null;
+      final hasCompletedSetup = ref
+          .read(settingsPreferencesRepositoryProvider)
+          .getHasCompletedSetup();
+      return hasCompletedSetup ? null : Routes.setup.toString();
+    },
     errorPageBuilder: (context, state) =>
         const CupertinoPage(child: PageNotFoundScreen()),
     routes: [
@@ -169,6 +181,12 @@ final routerProvider = Provider(
           );
         },
         routes: [
+          GoRoute(
+            path: Routes.setup.toString(),
+            name: Routes.setup.name,
+            pageBuilder: (context, state) =>
+                const CupertinoPage(child: SetupScreen()),
+          ),
           GoRoute(
             path: Routes.splash.toString(),
             name: Routes.splash.name,

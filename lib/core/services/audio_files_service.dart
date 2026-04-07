@@ -62,20 +62,19 @@ class AudioFilesServiceNotifier
               return UnmodifiableListView([]);
             }
           } else if (Platform.isIOS) {
-            final pickedFiles = await FilePicker.platform.pickFiles(
-              allowMultiple: true,
-              dialogTitle: "Pick Song Files",
+            final newDirectory = await FilePicker.platform.getDirectoryPath(
+              dialogTitle: "Select Music Folder",
             );
 
-            if (pickedFiles == null || pickedFiles.files.isEmpty) {
+            if (newDirectory == null) {
               return UnmodifiableListView([]);
             }
 
             final result = await compute(
               ref
                   .read(metadataReaderRepositoryProvider)
-                  .extractMetadataFromFiles,
-              pickedFiles.files.map((f) => f.path!).toList(),
+                  .extractMetadataFromDirectory,
+              newDirectory,
             );
 
             await metadataBox.addAll(result);

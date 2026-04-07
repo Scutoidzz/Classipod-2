@@ -199,4 +199,18 @@ class SettingsPreferencesRepository {
       isImmersiveModeEnabled,
     );
   }
+
+  bool getHasCompletedSetup() {
+    return _sharedPreferencesWithCache.getBool(
+          SharedPreferencesKeys.hasCompletedSetup.name,
+        ) ??
+        false;
+  }
+
+  Future<void> setHasCompletedSetup({required bool hasCompleted}) async {
+    return _sharedPreferencesWithCache.setBool(
+      SharedPreferencesKeys.hasCompletedSetup.name,
+      hasCompleted,
+    );
+  }
 }
