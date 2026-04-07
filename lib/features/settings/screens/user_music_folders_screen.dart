@@ -22,33 +22,72 @@ class _UserMusicFoldersScreenState extends ConsumerState<UserMusicFoldersScreen>
     try {
       setState(() => _isScanning = true);
 
-      final folderPath = await FilePicker.platform.getDirectoryPath(
-        dialogTitle: 'Select Music Folder',
-        lockParentWindow: true,
-      );
+      String? folderPath;
+      String? folderName;
 
-      if (folderPath != null && mounted) {
-        final folderName = folderPath.split(Platform.pathSeparator).last;
+      if (Platform.isIOS) {
+        // On iOS, use file picker since directory access is sandboxed
+        final pickedFiles = await FilePicker.platform.pickFiles(
+          allowMultiple: true,
+          type: FileType.audio,
+          dialogTitle: 'Select Music Files',
+        );
+
+        if (pickedFiles == null || pickedFiles.files.isEmpty) {
+          setState(() => _isScanning = false);
+          return;
+        }
+
+        // Use first file's directory as the "folder"
+        final firstFilePath = pickedFiles.files.first.path;
+        if (firstFilePath == null) {
+          setState(() => _isScanning = false);
+          return;
+        }
+
+        folderPath = File(firstFilePath).parent.path;
+        folderName = folderPath.split(Platform.pathSeparator).last;
+
+        // Scan picked files
+        await ref
+            .read(audioFilesServiceProvider.notifier)
+            .addMusicFilesAndScan(
+              pickedFiles.files.map((f) => f.path!).toList(),
+              folderName,
+            );
+      } else {
+        // On desktop platforms, use directory picker
+        folderPath = await FilePicker.platform.getDirectoryPath(
+          dialogTitle: 'Select Music Folder',
+          lockParentWindow: true,
+        );
+
+        if (folderPath == null) {
+          setState(() => _isScanning = false);
+          return;
+        }
+
+        folderName = folderPath.split(Platform.pathSeparator).last;
 
         await ref
             .read(audioFilesServiceProvider.notifier)
             .addMusicFolderAndScan(folderPath, folderName);
+      }
 
-        if (mounted) {
-          showCupertinoDialog(
-            context: context,
-            builder: (context) => CupertinoAlertDialog(
-              title: const Text('Folder Added'),
-              content: Text('Added: $folderName'),
-              actions: [
-                CupertinoDialogAction(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-        }
+      if (mounted) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+            title: const Text('Folder Added'),
+            content: Text('Added: $folderName'),
+            actions: [
+              CupertinoDialogAction(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -56,7 +95,7 @@ class _UserMusicFoldersScreenState extends ConsumerState<UserMusicFoldersScreen>
           context: context,
           builder: (context) => CupertinoAlertDialog(
             title: const Text('Error'),
-            content: Text('Failed to add folder: $e'),
+            content: Text('Failed to add folder:\n$e'),
             actions: [
               CupertinoDialogAction(
                 onPressed: () => Navigator.pop(context),

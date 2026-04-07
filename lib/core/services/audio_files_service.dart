@@ -156,6 +156,59 @@ class AudioFilesServiceNotifier
     }
   }
 
+  Future<void> addMusicFilesAndScan(
+    List<String> filePaths,
+    String folderName,
+  ) async {
+    try {
+      // For iOS, we extract from individual files instead of a directory
+      final result = await compute(
+        ref
+            .read(metadataReaderRepositoryProvider)
+            .extractMetadataFromFiles,
+        filePaths,
+      );
+
+      if (result.isEmpty) {
+        throw Exception(
+          'No audio files found in selection. Supported formats: MP3, OGG, OPUS, WAV, FLAC, M4A, AAC',
+        );
+      }
+
+      // Add to metadata box
+      final metadataBox = Hive.box<MusicMetadata>(Constants.metadataBoxName);
+      final uniqueResults = result.where((metadata) {
+        return !metadataBox.values.any(
+          (existing) => existing.filePath == metadata.filePath,
+        );
+      }).toList();
+
+      if (uniqueResults.isNotEmpty) {
+        await metadataBox.addAll(uniqueResults);
+      }
+
+      // For iOS, also store the folder reference for consistency
+      if (filePaths.isNotEmpty) {
+        final firstFilePath = filePaths.first;
+        final folderPath = File(firstFilePath).parent.path;
+        await ref
+            .read(userMusicFoldersProvider.notifier)
+            .addMusicFolder(
+              folderPath: folderPath,
+              folderName: folderName,
+            );
+      }
+
+      // Refresh the provider with all music
+      state = AsyncValue.data(
+        UnmodifiableListView(metadataBox.values),
+      );
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+      rethrow;
+    }
+  }
+
   Future<void> removeMusicFolderAndRefresh(dynamic folderKey) async {
     try {
       // Remove folder

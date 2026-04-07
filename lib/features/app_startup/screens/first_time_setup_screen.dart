@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:classipod/core/constants/app_palette.dart';
 import 'package:classipod/core/constants/assets.dart';
+import 'package:classipod/core/constants/assets.dart';
 import 'package:classipod/core/services/audio_files_service.dart';
 import 'package:classipod/features/app_startup/controllers/app_startup_controller.dart';
 import 'package:classipod/features/app_startup/screens/app_startup_loading_screen.dart';
@@ -24,23 +25,58 @@ class _FirstTimeSetupScreenState extends ConsumerState<FirstTimeSetupScreen> {
     try {
       setState(() => _isLoading = true);
 
-      final folderPath = await FilePicker.platform.getDirectoryPath(
-        dialogTitle: 'Select Music Folder',
-        lockParentWindow: true,
-      );
+      String? folderPath;
+      String? folderName;
 
-      if (folderPath == null) {
-        // User cancelled
-        setState(() => _isLoading = false);
-        return;
+      if (Platform.isIOS) {
+        // On iOS, use file picker since directory access is sandboxed
+        final pickedFiles = await FilePicker.platform.pickFiles(
+          allowMultiple: true,
+          type: FileType.audio,
+          dialogTitle: 'Select Music Files',
+        );
+
+        if (pickedFiles == null || pickedFiles.files.isEmpty) {
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        // Use first file's directory as the "folder"
+        final firstFilePath = pickedFiles.files.first.path;
+        if (firstFilePath == null) {
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        folderPath = File(firstFilePath).parent.path;
+        folderName = folderPath.split(Platform.pathSeparator).last;
+
+        // Scan picked files
+        await ref
+            .read(audioFilesServiceProvider.notifier)
+            .addMusicFilesAndScan(
+              pickedFiles.files.map((f) => f.path!).toList(),
+              folderName,
+            );
+      } else {
+        // On desktop platforms, use directory picker
+        folderPath = await FilePicker.platform.getDirectoryPath(
+          dialogTitle: 'Select Music Folder',
+          lockParentWindow: true,
+        );
+
+        if (folderPath == null) {
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        folderName = folderPath.split(Platform.pathSeparator).last;
+
+        // Scan and add music folder
+        await ref
+            .read(audioFilesServiceProvider.notifier)
+            .addMusicFolderAndScan(folderPath, folderName);
       }
-
-      final folderName = folderPath.split(Platform.pathSeparator).last;
-
-      // Scan and add music folder (this handles both adding folder and scanning)
-      await ref
-          .read(audioFilesServiceProvider.notifier)
-          .addMusicFolderAndScan(folderPath, folderName);
 
       // Now initialize the app after scanning is complete
       if (mounted) {
