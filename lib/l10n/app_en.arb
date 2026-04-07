@@ -31,6 +31,10 @@
   "@musicMenuScreenTitle": {
     "description": "The title of the music menu screen"
   },
+  "extrasScreenTitle": "Extras",
+  "@extrasScreenTitle": {
+    "description": "The title of the extras screen"
+  },
   "nowPlayingScreenTitle": "Now Playing",
   "@nowPlayingScreenTitle": {
     "description": "The title of the now playing screen"

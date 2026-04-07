@@ -48,6 +48,49 @@ List<String> _splitArtistNames(String artist) {
   return [artist];
 }
 
+String? _normalizeDynamicString(dynamic value) {
+  if (value == null) {
+    return null;
+  }
+
+  return normalizeMetadataString(value.toString());
+}
+
+List<String>? _parseTrackArtistNames(dynamic value) {
+  if (value == null) {
+    return null;
+  }
+
+  if (value is List) {
+    final List<String> artistNames = value
+        .map((artistName) => _normalizeDynamicString(artistName))
+        .whereType<String>()
+        .where((artistName) => artistName.isNotEmpty)
+        .toList(growable: false);
+
+    return artistNames.isEmpty ? null : artistNames;
+  }
+
+  final String? artistNames = _normalizeDynamicString(value);
+  if (artistNames == null || artistNames.isEmpty) {
+    return null;
+  }
+
+  return artistNames.split('/').map((name) => name.trim()).toList();
+}
+
+List<String> _parseGenres(dynamic value) {
+  if (value is List) {
+    return value
+        .map((genre) => genre?.toString())
+        .whereType<String>()
+        .where((genre) => genre.isNotEmpty)
+        .toList(growable: false);
+  }
+
+  return const <String>[];
+}
+
 class MusicMetadata extends HiveObject {
   /// Name of the track.
   final String? trackName;
@@ -133,7 +176,8 @@ class MusicMetadata extends HiveObject {
     final List<String> trackArtistNames = _splitArtistNames(artist);
 
     return MusicMetadata(
-      trackName: normalizeMetadataString(audioMetadata.title) ?? "Unknown Song",
+      trackName:
+          normalizeMetadataString(audioMetadata.title) ?? "Unknown Song",
       trackArtistNames: trackArtistNames,
       albumName:
           normalizeMetadataString(audioMetadata.album) ?? "Unknown Album",
@@ -155,30 +199,47 @@ class MusicMetadata extends HiveObject {
     );
   }
 
-  factory MusicMetadata.fromMap(Map<String, dynamic> map) => MusicMetadata(
-    trackName: normalizeMetadataString(map['metadata']['trackName']),
-    trackArtistNames: normalizeMetadataString(
-      map['metadata']['trackArtistNames'],
-    )?.split('/'),
-    albumName: normalizeMetadataString(map['metadata']['albumName']),
-    albumArtistName: normalizeMetadataString(
-      map['metadata']['albumArtistName'],
-    ),
-    trackNumber: parseInteger(map['metadata']['trackNumber']),
-    albumLength: parseInteger(map['metadata']['albumLength']),
-    year: parseInteger(map['metadata']['year']),
-    genres: map['genres'],
-    discNumber: parseInteger(map['metadata']['discNumber']),
-    mimeType: map['metadata']['mimeType'],
-    trackDuration: parseInteger(map['metadata']['trackDuration']),
-    bitrate: parseInteger(map['metadata']['bitrate']),
-    filePath: map['filePath'],
-    thumbnailPath: map['thumbnailPath'],
-    originalSongIndex: map['originalSongIndex'],
-    isOnDevice: map['isOnDevice'],
-    rating: map['rating'],
-    lyrics: map['lyrics'],
-  );
+  factory MusicMetadata.fromMap(Map<String, dynamic> map) {
+    final Map<String, dynamic> metadataMap = switch (map['metadata']) {
+      final Map metadata => Map<String, dynamic>.from(metadata),
+      _ => map,
+    };
+
+    return MusicMetadata(
+      trackName: _normalizeDynamicString(metadataMap['trackName']),
+      trackArtistNames: _parseTrackArtistNames(
+        metadataMap['trackArtistNames'],
+      ),
+      albumName: _normalizeDynamicString(metadataMap['albumName']),
+      albumArtistName: _normalizeDynamicString(
+        metadataMap['albumArtistName'],
+      ),
+      trackNumber: parseInteger(metadataMap['trackNumber']),
+      albumLength: parseInteger(metadataMap['albumLength']),
+      year: parseInteger(metadataMap['year']),
+      genres: _parseGenres(metadataMap['genres'] ?? map['genres']),
+      discNumber: parseInteger(metadataMap['discNumber']),
+      mimeType: _normalizeDynamicString(metadataMap['mimeType']),
+      trackDuration: parseInteger(metadataMap['trackDuration']),
+      bitrate: parseInteger(metadataMap['bitrate']),
+      filePath: _normalizeDynamicString(
+        metadataMap['filePath'] ?? map['filePath'],
+      ),
+      thumbnailPath: _normalizeDynamicString(
+        metadataMap['thumbnailPath'] ?? map['thumbnailPath'],
+      ),
+      originalSongIndex: parseInteger(
+            metadataMap['originalSongIndex'] ?? map['originalSongIndex'],
+          ) ??
+          0,
+      isOnDevice:
+          (metadataMap['isOnDevice'] ?? map['isOnDevice']) as bool? ?? true,
+      rating: parseInteger(metadataMap['rating'] ?? map['rating']) ?? 0,
+      lyrics: _normalizeDynamicString(
+        metadataMap['lyrics'] ?? map['lyrics'],
+      ),
+    );
+  }
 
   Map<String, dynamic> toMap() => {
     'trackName': trackName,

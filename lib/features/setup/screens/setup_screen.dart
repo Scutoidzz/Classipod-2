@@ -1,3 +1,4 @@
+import 'package:classipod/core/alerts/dialogs.dart';
 import 'package:classipod/core/constants/app_palette.dart';
 import 'package:classipod/core/constants/assets.dart';
 import 'package:classipod/core/constants/constants.dart';
@@ -34,14 +35,34 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
         return;
       }
 
+      final metadataReaderRepository = ref.read(
+        metadataReaderRepositoryProvider,
+      );
+      final metadataMaps = await compute(
+        extractMetadataMapsFromDirectoryInBackground,
+        metadataReaderRepository.buildDirectoryScanRequest(
+          musicFolderPath: newDirectory,
+        ),
+      );
+      final result = metadataReaderRepository.metadataFromMaps(metadataMaps);
+
+      if (result.isEmpty) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          await Dialogs.showInfoDialog(
+            context: context,
+            title: 'No Music Found',
+            content:
+                'No supported music files were found in that folder. '
+                'Classipod already scans subfolders recursively, so lyrics '
+                'files are fine to keep there.',
+          );
+        }
+        return;
+      }
+
       final metadataBox = Hive.box<MusicMetadata>(Constants.metadataBoxName);
       await metadataBox.clear();
-
-      final result = await compute(
-        ref.read(metadataReaderRepositoryProvider).extractMetadataFromDirectory,
-        newDirectory,
-      );
-
       await metadataBox.addAll(result);
 
       await ref
@@ -52,7 +73,16 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
         ref.read(routerProvider).goNamed(Routes.splash.name);
       }
     } catch (_) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+        await Dialogs.showInfoDialog(
+          context: context,
+          title: 'Import Failed',
+          content:
+              'Classipod could not finish scanning that folder. '
+              'Try picking the exact music folder again.',
+        );
+      }
     }
   }
 

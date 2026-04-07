@@ -1,5 +1,4 @@
 import 'package:classipod/core/constants/app_palette.dart';
-import 'package:classipod/features/menu/models/split_screen_type.dart';
 import 'package:flutter/cupertino.dart';
 
 class IconPreviewWidget extends StatelessWidget {
@@ -17,7 +16,7 @@ class IconPreviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      key: const ValueKey(SplitScreenType.shuffle),
+      key: ValueKey<String>('icon-preview::$titleText::$contentText'),
       width: double.infinity,
       child: DecoratedBox(
         decoration: const BoxDecoration(

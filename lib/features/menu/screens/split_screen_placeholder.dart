@@ -98,6 +98,12 @@ class _SplitScreenPlaceholderState extends ConsumerState<SplitScreenPlaceholder>
           contentText:
               "${ref.read(songsProvider).length} ${context.localization.songsScreenTitle}",
         );
+      } else if (splitScreenType == SplitScreenType.extras) {
+        splitScreenWidget = IconPreviewWidget(
+          titleText: context.localization.extrasScreenTitle,
+          icon: CupertinoIcons.square_grid_2x2_fill,
+          contentText: context.localization.appTitle,
+        );
       } else if (splitScreenType == SplitScreenType.settings) {
         splitScreenWidget = const SettingsPreviewWidget();
       } else if (splitScreenType == SplitScreenType.nowPlaying) {

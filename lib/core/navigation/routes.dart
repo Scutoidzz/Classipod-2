@@ -6,6 +6,7 @@ import 'package:classipod/features/app_startup/screens/splash_screen.dart';
 import 'package:classipod/features/custom_screen_elements/custom_scroll_behavior.dart';
 import 'package:classipod/features/custom_screen_elements/options_modal_page.dart';
 import 'package:classipod/features/device/widgets/device_frame.dart';
+import 'package:classipod/features/menu/screens/extras_screen.dart';
 import 'package:classipod/features/menu/screens/main_menu_screen.dart';
 import 'package:classipod/features/menu/screens/music_menu_screen.dart';
 import 'package:classipod/features/menu/screens/split_screen_placeholder.dart';
@@ -45,6 +46,7 @@ enum Routes {
   setup,
   splash,
   menu,
+  extras,
   settings,
   about,
   language,
@@ -87,6 +89,8 @@ enum Routes {
         return "";
       case menu:
         return context.localization.menuScreenTitle;
+      case extras:
+        return context.localization.extrasScreenTitle;
       case settings:
         return context.localization.settingsScreenTitle;
       case about:
@@ -216,6 +220,13 @@ final routerProvider = Provider(
                 pageBuilder: (context, state) =>
                     const CupertinoPage(child: MainMenuScreen()),
                 routes: [
+                  GoRoute(
+                    path: Routes.extras.name,
+                    name: Routes.extras.name,
+                    parentNavigatorKey: menuNavigatorKey,
+                    pageBuilder: (context, state) =>
+                        const CupertinoPage(child: ExtrasScreen()),
+                  ),
                   GoRoute(
                     path: Routes.settings.name,
                     name: Routes.settings.name,

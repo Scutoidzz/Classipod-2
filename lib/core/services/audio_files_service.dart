@@ -50,11 +50,17 @@ class AudioFilesServiceNotifier
                   .musicFolderPath,
             );
             if (newDirectory != null) {
-              final result = await compute(
-                ref
-                    .read(metadataReaderRepositoryProvider)
-                    .extractMetadataFromDirectory,
-                newDirectory,
+              final metadataReaderRepository = ref.read(
+                metadataReaderRepositoryProvider,
+              );
+              final metadataMaps = await compute(
+                extractMetadataMapsFromDirectoryInBackground,
+                metadataReaderRepository.buildDirectoryScanRequest(
+                  musicFolderPath: newDirectory,
+                ),
+              );
+              final result = metadataReaderRepository.metadataFromMaps(
+                metadataMaps,
               );
               await metadataBox.addAll(result);
               return UnmodifiableListView(result);
@@ -70,11 +76,17 @@ class AudioFilesServiceNotifier
               return UnmodifiableListView([]);
             }
 
-            final result = await compute(
-              ref
-                  .read(metadataReaderRepositoryProvider)
-                  .extractMetadataFromDirectory,
-              newDirectory,
+            final metadataReaderRepository = ref.read(
+              metadataReaderRepositoryProvider,
+            );
+            final metadataMaps = await compute(
+              extractMetadataMapsFromDirectoryInBackground,
+              metadataReaderRepository.buildDirectoryScanRequest(
+                musicFolderPath: newDirectory,
+              ),
+            );
+            final result = metadataReaderRepository.metadataFromMaps(
+              metadataMaps,
             );
 
             await metadataBox.addAll(result);
@@ -85,11 +97,19 @@ class AudioFilesServiceNotifier
             final OnAudioQuery audioQuery = OnAudioQuery();
             final queriedSongs = await audioQuery.querySongs();
 
-            final result = await compute(
-              ref
-                  .read(metadataReaderRepositoryProvider)
-                  .extractMetadataFromFiles,
-              queriedSongs.map((e) => e.data).toList(growable: false),
+            final metadataReaderRepository = ref.read(
+              metadataReaderRepositoryProvider,
+            );
+            final metadataMaps = await compute(
+              extractMetadataMapsFromFilesInBackground,
+              metadataReaderRepository.buildFilesScanRequest(
+                filePaths: queriedSongs
+                    .map((song) => song.data)
+                    .toList(growable: false),
+              ),
+            );
+            final result = metadataReaderRepository.metadataFromMaps(
+              metadataMaps,
             );
             await metadataBox.addAll(result);
             return UnmodifiableListView(result);
