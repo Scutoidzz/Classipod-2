@@ -156,12 +156,13 @@ class AudioFilesServiceNotifier
     }
   }
 
-  Future<void> addMusicFilesAndScan(
-    List<String> filePaths,
-    String folderName,
-  ) async {
+  Future<String> addAlbumFromPickedFiles(List<String> filePaths) async {
     try {
-      // For iOS, we extract from individual files instead of a directory
+      if (filePaths.isEmpty) {
+        throw Exception('No files selected');
+      }
+
+      // Extract metadata from picked files
       final result = await compute(
         ref
             .read(metadataReaderRepositoryProvider)
@@ -171,13 +172,63 @@ class AudioFilesServiceNotifier
 
       if (result.isEmpty) {
         throw Exception(
-          'No audio files found in selection. Supported formats: MP3, OGG, OPUS, WAV, FLAC, M4A, AAC',
+          'No audio files found. Supported formats: MP3, OGG, OPUS, WAV, FLAC, M4A, AAC',
         );
       }
 
-      // Add to metadata box
+      // Get the album name from first track
+      final albumName = result.first.albumName ?? 'Unknown Album';
+      
+      // Get app documents directory
+      final deviceDir = await ref.read(deviceDirectoryProvider.future);
+      final albumStoragePath =
+          '${deviceDir.documentsDirectory.path}/ClassiPod/albums/$albumName';
+      final albumDir = Directory(albumStoragePath);
+      
+      if (!albumDir.existsSync()) {
+        albumDir.createSync(recursive: true);
+      }
+
+      // Copy files to app storage and update file paths
+      final copiedMetadata = <MusicMetadata>[];
+      
+      for (int i = 0; i < filePaths.length; i++) {
+        final originalPath = filePaths[i];
+        final file = File(originalPath);
+        final fileName = file.uri.pathSegments.last;
+        final newPath = '$albumStoragePath/$fileName';
+        
+        // Copy file to app storage
+        await file.copy(newPath);
+        
+        // Update metadata with new file path
+        final metadata = result[i];
+        final updatedMetadata = MusicMetadata(
+          trackName: metadata.trackName,
+          trackArtistNames: metadata.trackArtistNames,
+          albumName: metadata.albumName,
+          albumArtistName: metadata.albumArtistName,
+          trackNumber: metadata.trackNumber,
+          albumLength: metadata.albumLength,
+          year: metadata.year,
+          genres: metadata.genres,
+          discNumber: metadata.discNumber,
+          mimeType: metadata.mimeType,
+          trackDuration: metadata.trackDuration,
+          bitrate: metadata.bitrate,
+          filePath: newPath, // Updated path in app storage
+          thumbnailPath: metadata.thumbnailPath,
+          originalSongIndex: metadata.originalSongIndex,
+          isOnDevice: true,
+          rating: metadata.rating,
+          lyrics: metadata.lyrics,
+        );
+        copiedMetadata.add(updatedMetadata);
+      }
+
+      // Add to metadata box (filter duplicates)
       final metadataBox = Hive.box<MusicMetadata>(Constants.metadataBoxName);
-      final uniqueResults = result.where((metadata) {
+      final uniqueResults = copiedMetadata.where((metadata) {
         return !metadataBox.values.any(
           (existing) => existing.filePath == metadata.filePath,
         );
@@ -187,22 +238,12 @@ class AudioFilesServiceNotifier
         await metadataBox.addAll(uniqueResults);
       }
 
-      // For iOS, also store the folder reference for consistency
-      if (filePaths.isNotEmpty) {
-        final firstFilePath = filePaths.first;
-        final folderPath = File(firstFilePath).parent.path;
-        await ref
-            .read(userMusicFoldersProvider.notifier)
-            .addMusicFolder(
-              folderPath: folderPath,
-              folderName: folderName,
-            );
-      }
-
       // Refresh the provider with all music
       state = AsyncValue.data(
         UnmodifiableListView(metadataBox.values),
       );
+
+      return albumName;
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
       rethrow;
