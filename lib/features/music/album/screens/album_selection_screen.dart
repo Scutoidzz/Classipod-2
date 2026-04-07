@@ -28,26 +28,37 @@ class _AlbumsSelectionScreenState extends ConsumerState<AlbumsSelectionScreen>
   double get displayTileHeight => 54;
 
   @override
-  int get extraDisplayItems => 1;
+  int get extraDisplayItems => 2;
 
   @override
   String get routeName => Routes.albums.name;
 
   @override
-  List<AlbumModel> get displayItems => ref.read(albumDetailsProvider);
+  List<AlbumModel> get displayItems => ref.watch(albumDetailsProvider);
 
   @override
-  Future<void> onSelectPressed() async =>
-      _navigateToAlbumSelectionScreen(selectedDisplayItem);
+  Future<void> onSelectPressed() async {
+    if (selectedDisplayItem == displayItems.length + 1) {
+      await _addAlbum();
+      return;
+    }
+
+    await _navigateToAlbumSelectionScreen(selectedDisplayItem);
+  }
 
   @override
-  Future<void> onSelectLongPress() =>
-      _navigateToAlbumMoreOptionsScreen(selectedDisplayItem);
+  Future<void> onSelectLongPress() async {
+    if (selectedDisplayItem == displayItems.length + 1) {
+      return;
+    }
+    return _navigateToAlbumMoreOptionsScreen(selectedDisplayItem);
+  }
 
   Future<void> _navigateToAlbumMoreOptionsScreen(int index) async {
     setState(() => selectedDisplayItem = index);
-    //If the index is 0, it means the user has selected the "All Albums" option
-    if (index == 0) {
+    // If the index is 0, it means the user has selected the "All Albums" option.
+    // If the index is the last extra item, it means "Add Album".
+    if (index == 0 || index == displayItems.length + 1) {
       return;
     } else {
       await context.pushNamed(
