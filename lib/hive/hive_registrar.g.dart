@@ -10,6 +10,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(ExcludeDirectoryModelAdapter());
     registerAdapter(MusicMetadataAdapter());
     registerAdapter(PlaylistModelAdapter());
+    registerAdapter(UserMusicFolderModelAdapter());
   }
 }
 
@@ -18,5 +19,6 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(ExcludeDirectoryModelAdapter());
     registerAdapter(MusicMetadataAdapter());
     registerAdapter(PlaylistModelAdapter());
+    registerAdapter(UserMusicFolderModelAdapter());
   }
 }
