@@ -35,7 +35,7 @@ class SearchListTile extends StatelessWidget {
 
     late final String title;
     late final String description;
-    late final String? imageFilePath;
+    String? imageFilePath;
     if (searchResult.searchResultType == SearchResultType.track) {
       final metadata = searchResult.result as MusicMetadata;
       title = metadata.getTrackName;

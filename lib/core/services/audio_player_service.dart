@@ -151,7 +151,8 @@ class AudioPlayerServiceNotifier extends AsyncNotifier<void> {
 
       // If the album is already playing
       if (nowPlayingDetails.nowPlayingType == NowPlayingType.album &&
-          nowPlayingDetails.currentMetadata?.getAlbumDetail == albumDetail) {
+          nowPlayingDetails.currentMetadata?.getAlbumName == albumDetail.albumName &&
+          nowPlayingDetails.currentMetadata?.getAlbumArtistName == albumDetail.albumArtistName) {
         await playSongAtIndex(songIndex);
         return;
       } else {

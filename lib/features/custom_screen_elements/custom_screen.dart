@@ -21,7 +21,7 @@ mixin CustomScreen<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   void onSelectLongPress() {}
 
   void scrollForward() {
-    if (selectedDisplayItem < displayItems.length + extraDisplayItems - 1) {
+    if (selectedDisplayItem < displayItems.length + extraDisplayItems) {
       setState(() {
         selectedDisplayItem++;
       });
