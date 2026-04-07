@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:classipod/core/constants/app_palette.dart';
 import 'package:classipod/core/constants/assets.dart';
-import 'package:classipod/core/providers/first_time_provider.dart';
-import 'package:classipod/core/providers/shared_preferences_with_cache_provider.dart';
 import 'package:classipod/core/services/audio_files_service.dart';
 import 'package:classipod/features/app_startup/controllers/app_startup_controller.dart';
+import 'package:classipod/features/app_startup/screens/app_startup_loading_screen.dart';
 import 'package:classipod/features/settings/controller/user_music_folders_controller.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,14 +46,8 @@ class _FirstTimeSetupScreenState extends ConsumerState<FirstTimeSetupScreen> {
             .read(audioFilesServiceProvider.notifier)
             .addMusicFolderAndScan(folderPath, folderName);
 
-        // Mark first time as complete
-        final prefs =
-            await ref.read(sharedPreferencesWithCacheProvider.future);
-        await prefs.setBool('isFirstTime', false);
-
-        // Invalidate both providers to trigger rebuild
-        ref.invalidate(isFirstTimeProvider);
-        ref.invalidate(appStartupControllerProvider);
+        // Initialize the app
+        await ref.read(appStartupControllerProvider.future);
       }
     } catch (e) {
       if (mounted) {
