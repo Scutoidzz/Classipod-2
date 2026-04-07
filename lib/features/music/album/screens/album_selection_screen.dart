@@ -188,10 +188,32 @@ class _AlbumsSelectionScreenState extends ConsumerState<AlbumsSelectionScreen>
                   }
 
                   if (index == displayItems.length + 1) {
-                    return CupertinoListTile(
-                      title: const Text('Add Album'),
-                      trailing: const CupertinoListTileChevron(),
+                    return GestureDetector(
                       onTap: _addAlbum,
+                      child: Container(
+                        color: CupertinoColors.systemBackground,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Add Album',
+                              style: TextStyle(
+                                color: CupertinoColors.activeBlue,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const Icon(
+                              CupertinoIcons.chevron_right,
+                              color: CupertinoColors.inactiveGray,
+                              size: 18,
+                            ),
+                          ],
+                        ),
+                      ),
                     );
                   }
 
