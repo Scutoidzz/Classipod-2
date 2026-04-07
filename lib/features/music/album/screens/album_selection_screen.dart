@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:classipod/core/navigation/routes.dart';
 import 'package:classipod/core/providers/filtered_audio_files_provider.dart';
+import 'package:classipod/core/services/audio_files_service.dart';
 import 'package:classipod/core/widgets/empty_state_widget.dart';
 import 'package:classipod/features/custom_screen_elements/custom_screen.dart';
 import 'package:classipod/features/music/album/models/album_model.dart';
 import 'package:classipod/features/music/album/providers/album_details_provider.dart';
 import 'package:classipod/features/music/album/widgets/album_list_tile.dart';
 import 'package:classipod/features/status_bar/widgets/status_bar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -55,6 +57,63 @@ class _AlbumsSelectionScreenState extends ConsumerState<AlbumsSelectionScreen>
     }
   }
 
+  Future<void> _addAlbum() async {
+    try {
+      final pickedFiles = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.audio,
+        dialogTitle: 'Select Songs for Album',
+      );
+
+      if (pickedFiles == null || pickedFiles.files.isEmpty) {
+        return;
+      }
+
+      final filePaths = pickedFiles.files
+          .where((f) => f.path != null)
+          .map((f) => f.path!)
+          .toList();
+
+      if (mounted) {
+        final albumName = await ref
+            .read(audioFilesServiceProvider.notifier)
+            .addAlbumFromPickedFiles(filePaths);
+
+        if (mounted) {
+          showCupertinoDialog(
+            context: context,
+            builder: (context) => CupertinoAlertDialog(
+              title: const Text('Album Added'),
+              content: Text('Added: $albumName'),
+              actions: [
+                CupertinoDialogAction(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+            title: const Text('Error'),
+            content: Text('Failed to add album:\n$e'),
+            actions: [
+              CupertinoDialogAction(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
   void _navigateToAlbumSelectionScreen(int index) {
     setState(() => selectedDisplayItem = index);
     if (index == 0) {
@@ -97,7 +156,7 @@ class _AlbumsSelectionScreenState extends ConsumerState<AlbumsSelectionScreen>
               controller: scrollController,
               child: ListView.builder(
                 controller: scrollController,
-                itemCount: displayItems.length + 1,
+                itemCount: displayItems.length + 2,
                 prototypeItem: AlbumListTile(
                   albumDetails: AlbumModel(
                     albumName: '',
@@ -125,6 +184,14 @@ class _AlbumsSelectionScreenState extends ConsumerState<AlbumsSelectionScreen>
                       isAllSongsAlbum: true,
                       onTap: () async => _navigateToAlbumSelectionScreen(0),
                       onLongPress: () {},
+                    );
+                  }
+
+                  if (index == displayItems.length + 1) {
+                    return CupertinoListTile(
+                      title: const Text('Add Album'),
+                      trailing: const CupertinoListTileChevron(),
+                      onTap: _addAlbum,
                     );
                   }
 
