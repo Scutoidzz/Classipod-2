@@ -11,7 +11,7 @@ class SettingsPreferencesModel {
   final ClickWheelSize clickWheelSize;
   final ClickWheelSensitivity clickWheelSensitivity;
   final bool isTouchScreenEnabled;
-  final RepeatMode repeatMode;
+  final AppRepeatMode repeatMode;
   final bool vibrate;
   final bool clickWheelSound;
   final VolumeMode volumeMode;
@@ -42,7 +42,7 @@ class SettingsPreferencesModel {
     ClickWheelSize? clickWheelSize,
     ClickWheelSensitivity? clickWheelSensitivity,
     bool? isTouchScreenEnabled,
-    RepeatMode? repeatMode,
+    AppRepeatMode? repeatMode,
     bool? vibrate,
     bool? clickWheelSound,
     VolumeMode? volumeMode,

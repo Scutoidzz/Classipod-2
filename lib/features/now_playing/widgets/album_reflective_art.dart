@@ -120,7 +120,7 @@ class _AlbumReflectiveArtState extends State<AlbumReflectiveArt>
               child: Image(
                 image: (widget.thumbnailPath != null)
                     ? (widget.isOnDevice
-                          ? FileImage(File(widget.thumbnailPath!))
+                          ? FileImage(File(widget.thumbnailPath!)) as ImageProvider
                           : NetworkImage(widget.thumbnailPath!))
                     : const AssetImage(Assets.defaultAlbumCoverImage) as ImageProvider,
                 errorBuilder: (context, error, stackTrace) => Image.asset(
@@ -149,7 +149,7 @@ class _AlbumReflectiveArtState extends State<AlbumReflectiveArt>
                     child: Image(
                       image: (widget.thumbnailPath != null)
                           ? (widget.isOnDevice
-                                ? FileImage(File(widget.thumbnailPath!))
+                                ? FileImage(File(widget.thumbnailPath!)) as ImageProvider
                                 : NetworkImage(widget.thumbnailPath!))
                           : const AssetImage(Assets.defaultAlbumCoverImage) as ImageProvider,
                       errorBuilder: (context, error, stackTrace) => Image.asset(

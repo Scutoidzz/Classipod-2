@@ -42,18 +42,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen(splashControllerProvider, (_, state) async {
-      final error = state.valueOrNull;
-      if (error != null && error is Exception) {
-        if (error is AudioPermissionDeniedException) {
+      final error = state.error;
+      if (error == null) return;
+      if (error is AudioPermissionDeniedException) {
+        if (context.mounted) {
           await Dialogs.showInfoDialog(
             context: context,
             title: context.localization.audioAccessPermissionTitle,
             content: context.localization.audioAccessPermissionContent,
           );
-          await ref
-              .read(splashControllerProvider.notifier)
-              .requestStoragePermissions();
-        } else if (error is AudioPermissionPermanentlyDeniedException) {
+        }
+        await ref
+            .read(splashControllerProvider.notifier)
+            .requestStoragePermissions();
+      } else if (error is AudioPermissionPermanentlyDeniedException) {
+        if (context.mounted) {
           await Dialogs.showInfoDialog(
             context: context,
             title: context
@@ -63,12 +66,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 .localization
                 .audioAccessPermissionPermanentlyDeniedContent,
           );
-          await ref
-              .read(splashControllerProvider.notifier)
-              .requestStoragePermissions();
-        } else if (error == null && context.mounted) {
-          context.goNamed(Routes.menu.name);
         }
+        await ref
+            .read(splashControllerProvider.notifier)
+            .requestStoragePermissions();
       }
     });
     return CupertinoPageScaffold(

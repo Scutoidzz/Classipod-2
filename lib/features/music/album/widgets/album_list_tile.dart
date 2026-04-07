@@ -76,7 +76,7 @@ class AlbumListTile extends StatelessWidget {
                 Image(
                   image: (albumDetails.albumArtPath != null)
                       ? (albumDetails.isOnDevice()
-                            ? FileImage(File(albumDetails.albumArtPath!))
+                            ? FileImage(File(albumDetails.albumArtPath!)) as ImageProvider
                             : NetworkImage(albumDetails.albumArtPath!))
                       : const AssetImage(Assets.defaultAlbumCoverImage) as ImageProvider,
                   errorBuilder: (context, error, stackTrace) => Image.asset(

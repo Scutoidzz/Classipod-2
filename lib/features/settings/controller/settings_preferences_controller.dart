@@ -101,7 +101,7 @@ class SettingsPreferencesControllerNotifier
     });
   }
 
-  Future<void> setInitialAppRepeatMode() async {
+  Future<void> setInitialRepeatMode() async {
     switch (state.repeatMode) {
       case AppRepeatMode.off:
         await ref
@@ -217,7 +217,7 @@ class SettingsPreferencesControllerNotifier
         );
   }
 
-  Future<void> toggleAppRepeatMode() async {
+  Future<void> toggleRepeatMode() async {
     switch (state.repeatMode) {
       case AppRepeatMode.off:
         state = state.copyWith(repeatMode: AppRepeatMode.one);

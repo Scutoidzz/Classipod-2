@@ -48,7 +48,7 @@ class AlbumArtSongListTile extends StatelessWidget {
               Image(
                 image: (songMetadata.thumbnailPath != null)
                     ? (songMetadata.isOnDevice
-                          ? FileImage(File(songMetadata.thumbnailPath!))
+                          ? FileImage(File(songMetadata.thumbnailPath!)) as ImageProvider
                           : NetworkImage(songMetadata.thumbnailPath!))
                     : const AssetImage(Assets.defaultAlbumCoverImage) as ImageProvider,
                 errorBuilder: (context, error, stackTrace) => Image.asset(
