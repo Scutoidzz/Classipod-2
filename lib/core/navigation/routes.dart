@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:classipod/core/constants/keys.dart';
 import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:classipod/core/models/music_metadata.dart';
@@ -8,7 +6,6 @@ import 'package:classipod/features/app_startup/screens/splash_screen.dart';
 import 'package:classipod/features/custom_screen_elements/custom_scroll_behavior.dart';
 import 'package:classipod/features/custom_screen_elements/options_modal_page.dart';
 import 'package:classipod/features/device/widgets/device_frame.dart';
-import 'package:classipod/features/menu/screens/extras_screen.dart';
 import 'package:classipod/features/menu/screens/main_menu_screen.dart';
 import 'package:classipod/features/menu/screens/music_menu_screen.dart';
 import 'package:classipod/features/menu/screens/split_screen_placeholder.dart';
@@ -33,9 +30,7 @@ import 'package:classipod/features/music/songs/screens/songs_screen.dart';
 import 'package:classipod/features/now_playing/screen/now_playing_more_options_modal.dart';
 import 'package:classipod/features/now_playing/screen/now_playing_screen.dart';
 import 'package:classipod/features/settings/controller/settings_preferences_controller.dart';
-import 'package:classipod/features/settings/repository/settings_preferences_repository.dart';
 import 'package:classipod/features/settings/screens/about_screen.dart';
-import 'package:classipod/features/setup/screens/setup_screen.dart';
 import 'package:classipod/features/settings/screens/device_color_selection_screen.dart';
 import 'package:classipod/features/settings/screens/exclude_directories_screen.dart';
 import 'package:classipod/features/settings/screens/language_selection_screen.dart';
@@ -45,10 +40,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 enum Routes {
-  setup,
   splash,
   menu,
-  extras,
   settings,
   about,
   language,
@@ -85,14 +78,10 @@ enum Routes {
 
   String title(BuildContext context) {
     switch (this) {
-      case setup:
-        return "";
       case splash:
         return "";
       case menu:
         return context.localization.menuScreenTitle;
-      case extras:
-        return context.localization.extrasScreenTitle;
       case settings:
         return context.localization.settingsScreenTitle;
       case about:
@@ -163,14 +152,6 @@ final splitScreenViewControllerProvider = Provider<SplitScreenViewController>((
 final routerProvider = Provider(
   (ref) => GoRouter(
     initialLocation: Routes.splash.toString(),
-    redirect: (context, state) {
-      if (state.matchedLocation == Routes.setup.toString()) return null;
-      if (!kIsWeb && Platform.isIOS) return null;
-      final hasCompletedSetup = ref
-          .read(settingsPreferencesRepositoryProvider)
-          .getHasCompletedSetup();
-      return hasCompletedSetup ? null : Routes.setup.toString();
-    },
     errorPageBuilder: (context, state) =>
         const CupertinoPage(child: PageNotFoundScreen()),
     routes: [
@@ -188,12 +169,6 @@ final routerProvider = Provider(
           );
         },
         routes: [
-          GoRoute(
-            path: Routes.setup.toString(),
-            name: Routes.setup.name,
-            pageBuilder: (context, state) =>
-                const CupertinoPage(child: SetupScreen()),
-          ),
           GoRoute(
             path: Routes.splash.toString(),
             name: Routes.splash.name,
@@ -223,13 +198,6 @@ final routerProvider = Provider(
                 pageBuilder: (context, state) =>
                     const CupertinoPage(child: MainMenuScreen()),
                 routes: [
-                  GoRoute(
-                    path: Routes.extras.name,
-                    name: Routes.extras.name,
-                    parentNavigatorKey: menuNavigatorKey,
-                    pageBuilder: (context, state) =>
-                        const CupertinoPage(child: ExtrasScreen()),
-                  ),
                   GoRoute(
                     path: Routes.settings.name,
                     name: Routes.settings.name,

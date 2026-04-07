@@ -1,7 +1,6 @@
 import 'package:classipod/core/constants/app_palette.dart';
 import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:classipod/core/navigation/routes.dart';
-import 'package:classipod/core/widgets/system_ui_sync_scope.dart';
 import 'package:classipod/features/app_startup/screens/app_startup_screen.dart';
 import 'package:classipod/features/settings/controller/settings_preferences_controller.dart';
 import 'package:classipod/l10n/generated/app_localizations.dart';
@@ -58,21 +57,19 @@ class DevelopmentClassipodApp extends ConsumerWidget {
     debugPaintPointersEnabled = debuggerTools.debugPaintPointersEnabled;
     debugPaintLayerBordersEnabled = debuggerTools.debugPaintLayerBordersEnabled;
 
-    return SystemUiSyncScope(
-      child: CupertinoApp.router(
-        locale: Locale(languageLocaleCode),
-        builder: DevicePreview.appBuilder,
-        onGenerateTitle: (context) => context.localization.appTitle,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        showPerformanceOverlay: debuggerTools.showPerformanceOverlay,
-        showSemanticsDebugger: debuggerTools.showSemanticsDebugger,
-        checkerboardOffscreenLayers: debuggerTools.checkerboardOffscreenLayers,
-        checkerboardRasterCacheImages:
-            debuggerTools.checkerboardRasterCacheImages,
-        routerConfig: router,
-        theme: appTheme.toCupertinoTheme(),
-      ),
+    return CupertinoApp.router(
+      locale: Locale(languageLocaleCode),
+      builder: DevicePreview.appBuilder,
+      onGenerateTitle: (context) => context.localization.appTitle,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      showPerformanceOverlay: debuggerTools.showPerformanceOverlay,
+      showSemanticsDebugger: debuggerTools.showSemanticsDebugger,
+      checkerboardOffscreenLayers: debuggerTools.checkerboardOffscreenLayers,
+      checkerboardRasterCacheImages:
+          debuggerTools.checkerboardRasterCacheImages,
+      routerConfig: router,
+      theme: appTheme.toCupertinoTheme(),
     );
   }
 }

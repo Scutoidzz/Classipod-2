@@ -14,5 +14,4 @@ enum SharedPreferencesKeys {
   isMenuFirstTime,
   isNowPlayingFirstTime,
   isInputTextBarFirstTime,
-  hasCompletedSetup,
 }

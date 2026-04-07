@@ -34,10 +34,6 @@ final settingsPreferencesControllerProvider =
 
 class SettingsPreferencesControllerNotifier
     extends Notifier<SettingsPreferencesModel> {
-  static const MethodChannel _systemUiModeChannel = MethodChannel(
-    'classipod/system_ui',
-  );
-
   SettingsPreferencesControllerNotifier() : super();
 
   @override
@@ -81,19 +77,10 @@ class SettingsPreferencesControllerNotifier
         document.exitFullscreen();
       }
     } else if (io.Platform.isAndroid || io.Platform.isIOS) {
-      await SystemChrome.setEnabledSystemUIMode(
-        state.immersiveMode
-            ? SystemUiMode.immersiveSticky
-            : SystemUiMode.edgeToEdge,
-      );
-      try {
-        await _systemUiModeChannel.invokeMethod<void>('setImmersiveMode', {
-          'enabled': state.immersiveMode,
-        });
-      } on MissingPluginException {
-        // Desktop, tests, and preview environments do not expose the channel.
-      } on PlatformException {
-        // Native immersive controls are best-effort on supported platforms.
+      if (state.immersiveMode) {
+        await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      } else {
+        await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       }
     }
   }
@@ -150,16 +137,6 @@ class SettingsPreferencesControllerNotifier
     await ref
         .read(settingsPreferencesRepositoryProvider)
         .setDeviceColor(deviceColorName: deviceColor.name);
-  }
-
-  Future<void> cycleDeviceColor() async {
-    final int currentColorIndex = DeviceColor.values.indexOf(state.deviceColor);
-    final DeviceColor nextDeviceColor =
-        DeviceColor.values[
-          (currentColorIndex + 1) % DeviceColor.values.length
-        ];
-
-    await setDeviceColor(nextDeviceColor);
   }
 
   Future<void> toggleClickWheelSize() async {

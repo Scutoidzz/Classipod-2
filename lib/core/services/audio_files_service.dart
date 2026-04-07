@@ -50,17 +50,11 @@ class AudioFilesServiceNotifier
                   .musicFolderPath,
             );
             if (newDirectory != null) {
-              final metadataReaderRepository = ref.read(
-                metadataReaderRepositoryProvider,
-              );
-              final metadataMaps = await compute(
-                extractMetadataMapsFromDirectoryInBackground,
-                metadataReaderRepository.buildDirectoryScanRequest(
-                  musicFolderPath: newDirectory,
-                ),
-              );
-              final result = metadataReaderRepository.metadataFromMaps(
-                metadataMaps,
+              final result = await compute(
+                ref
+                    .read(metadataReaderRepositoryProvider)
+                    .extractMetadataFromDirectory,
+                newDirectory,
               );
               await metadataBox.addAll(result);
               return UnmodifiableListView(result);
@@ -68,25 +62,20 @@ class AudioFilesServiceNotifier
               return UnmodifiableListView([]);
             }
           } else if (Platform.isIOS) {
-            final newDirectory = await FilePicker.platform.getDirectoryPath(
-              dialogTitle: "Select Music Folder",
+            final pickedFiles = await FilePicker.platform.pickFiles(
+              allowMultiple: true,
+              dialogTitle: "Pick Song Files",
             );
 
-            if (newDirectory == null) {
+            if (pickedFiles == null || pickedFiles.files.isEmpty) {
               return UnmodifiableListView([]);
             }
 
-            final metadataReaderRepository = ref.read(
-              metadataReaderRepositoryProvider,
-            );
-            final metadataMaps = await compute(
-              extractMetadataMapsFromDirectoryInBackground,
-              metadataReaderRepository.buildDirectoryScanRequest(
-                musicFolderPath: newDirectory,
-              ),
-            );
-            final result = metadataReaderRepository.metadataFromMaps(
-              metadataMaps,
+            final result = await compute(
+              ref
+                  .read(metadataReaderRepositoryProvider)
+                  .extractMetadataFromFiles,
+              pickedFiles.files.map((f) => f.path!).toList(),
             );
 
             await metadataBox.addAll(result);
@@ -97,19 +86,11 @@ class AudioFilesServiceNotifier
             final OnAudioQuery audioQuery = OnAudioQuery();
             final queriedSongs = await audioQuery.querySongs();
 
-            final metadataReaderRepository = ref.read(
-              metadataReaderRepositoryProvider,
-            );
-            final metadataMaps = await compute(
-              extractMetadataMapsFromFilesInBackground,
-              metadataReaderRepository.buildFilesScanRequest(
-                filePaths: queriedSongs
-                    .map((song) => song.data)
-                    .toList(growable: false),
-              ),
-            );
-            final result = metadataReaderRepository.metadataFromMaps(
-              metadataMaps,
+            final result = await compute(
+              ref
+                  .read(metadataReaderRepositoryProvider)
+                  .extractMetadataFromFiles,
+              queriedSongs.map((e) => e.data).toList(growable: false),
             );
             await metadataBox.addAll(result);
             return UnmodifiableListView(result);

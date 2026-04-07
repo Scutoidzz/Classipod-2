@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final settingsPreferencesRepositoryProvider =
-    Provider<SettingsPreferencesRepository>((ref) {
+    Provider.autoDispose<SettingsPreferencesRepository>((ref) {
       return SettingsPreferencesRepository(
         ref.read(sharedPreferencesWithCacheProvider).requireValue,
       );
@@ -197,20 +197,6 @@ class SettingsPreferencesRepository {
     return _sharedPreferencesWithCache.setBool(
       SharedPreferencesKeys.immersiveMode.name,
       isImmersiveModeEnabled,
-    );
-  }
-
-  bool getHasCompletedSetup() {
-    return _sharedPreferencesWithCache.getBool(
-          SharedPreferencesKeys.hasCompletedSetup.name,
-        ) ??
-        false;
-  }
-
-  Future<void> setHasCompletedSetup({required bool hasCompleted}) async {
-    return _sharedPreferencesWithCache.setBool(
-      SharedPreferencesKeys.hasCompletedSetup.name,
-      hasCompleted,
     );
   }
 }
