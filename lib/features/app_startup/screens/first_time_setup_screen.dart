@@ -52,7 +52,8 @@ class _FirstTimeSetupScreenState extends ConsumerState<FirstTimeSetupScreen> {
             await ref.read(sharedPreferencesWithCacheProvider.future);
         await prefs.setBool('isFirstTime', false);
 
-        // Trigger app startup initialization
+        // Invalidate both providers to trigger rebuild
+        ref.invalidate(isFirstTimeProvider);
         ref.invalidate(appStartupControllerProvider);
       }
     } catch (e) {
