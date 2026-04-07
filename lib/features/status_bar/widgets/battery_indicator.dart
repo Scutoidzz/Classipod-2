@@ -19,7 +19,7 @@ class BatteryIndicator extends ConsumerWidget {
           batteryState: BatteryState.unknown,
         ),
       ),
-      loading: () => const BatteryIndicatorWidget(
+      loading: () => BatteryIndicatorWidget(
         batteryDetails: BatteryModel(
           level: 100,
           batteryState: BatteryState.full,
