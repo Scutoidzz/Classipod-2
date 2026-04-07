@@ -17,9 +17,9 @@ class AppStartupScreen extends ConsumerWidget {
     return appStartupState.when(
       skipLoadingOnReload: false,
       loading: () => const FirstTimeSetupScreen(),
-      error: (e, _) => AppStartupErrorScreen(
+      error: (e, _) => AppStartupError(
         error: e,
-        stackTrace: StackTrace.current,
+        onRetry: () => ref.refresh(appStartupControllerProvider),
       ),
       data: (_) => app,
     );
