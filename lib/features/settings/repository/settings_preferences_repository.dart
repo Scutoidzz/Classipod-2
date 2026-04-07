@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final settingsPreferencesRepositoryProvider =
-    Provider.autoDispose<SettingsPreferencesRepository>((ref) {
+    Provider<SettingsPreferencesRepository>((ref) {
       return SettingsPreferencesRepository(
         ref.read(sharedPreferencesWithCacheProvider).requireValue,
       );

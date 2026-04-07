@@ -26,7 +26,6 @@ class _SystemUiSyncScopeState extends ConsumerState<SystemUiSyncScope>
 
     return switch (defaultTargetPlatform) {
       TargetPlatform.android => true,
-      TargetPlatform.iOS => true,
       _ => false,
     };
   }
