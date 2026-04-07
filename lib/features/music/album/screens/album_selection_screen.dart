@@ -125,10 +125,10 @@ class _AlbumsSelectionScreenState extends ConsumerState<AlbumsSelectionScreen>
     }
   }
 
-  void _navigateToAlbumSelectionScreen(int index) {
+  Future<void> _navigateToAlbumSelectionScreen(int index) async {
     setState(() => selectedDisplayItem = index);
     if (index == 0) {
-      context.goNamed(
+      await context.goNamed(
         Routes.albumSongs.name,
         extra: AlbumModel(
           albumName: context.localization.allAlbums,
@@ -137,7 +137,7 @@ class _AlbumsSelectionScreenState extends ConsumerState<AlbumsSelectionScreen>
         ),
       );
     } else {
-      context.goNamed(Routes.albumSongs.name, extra: displayItems[index - 1]);
+      await context.goNamed(Routes.albumSongs.name, extra: displayItems[index - 1]);
     }
   }
 
