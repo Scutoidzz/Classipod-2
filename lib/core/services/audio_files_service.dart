@@ -128,6 +128,12 @@ class AudioFilesServiceNotifier
         folderPath,
       );
 
+      if (result.isEmpty) {
+        throw Exception(
+          'No audio files found in $folderPath. Supported formats: MP3, OGG, OPUS, WAV, FLAC, M4A, AAC',
+        );
+      }
+
       // Add to metadata box
       final metadataBox = Hive.box<MusicMetadata>(Constants.metadataBoxName);
       final uniqueResults = result.where((metadata) {
@@ -136,14 +142,17 @@ class AudioFilesServiceNotifier
         );
       }).toList();
 
-      await metadataBox.addAll(uniqueResults);
+      if (uniqueResults.isNotEmpty) {
+        await metadataBox.addAll(uniqueResults);
+      }
 
-      // Refresh the provider
+      // Refresh the provider with all music
       state = AsyncValue.data(
         UnmodifiableListView(metadataBox.values),
       );
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
+      rethrow;
     }
   }
 

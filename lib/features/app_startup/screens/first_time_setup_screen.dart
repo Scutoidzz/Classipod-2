@@ -5,7 +5,6 @@ import 'package:classipod/core/constants/assets.dart';
 import 'package:classipod/core/services/audio_files_service.dart';
 import 'package:classipod/features/app_startup/controllers/app_startup_controller.dart';
 import 'package:classipod/features/app_startup/screens/app_startup_loading_screen.dart';
-import 'package:classipod/features/settings/controller/user_music_folders_controller.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,32 +29,35 @@ class _FirstTimeSetupScreenState extends ConsumerState<FirstTimeSetupScreen> {
         lockParentWindow: true,
       );
 
-      if (folderPath != null && mounted) {
-        final folderName = folderPath.split(Platform.pathSeparator).last;
+      if (folderPath == null) {
+        // User cancelled
+        setState(() => _isLoading = false);
+        return;
+      }
 
-        // Add folder to user music folders
-        await ref
-            .read(userMusicFoldersProvider.notifier)
-            .addMusicFolder(
-              folderPath: folderPath,
-              folderName: folderName,
-            );
+      final folderName = folderPath.split(Platform.pathSeparator).last;
 
-        // Scan the folder
-        await ref
-            .read(audioFilesServiceProvider.notifier)
-            .addMusicFolderAndScan(folderPath, folderName);
+      // Scan and add music folder (this handles both adding folder and scanning)
+      await ref
+          .read(audioFilesServiceProvider.notifier)
+          .addMusicFolderAndScan(folderPath, folderName);
 
-        // Initialize the app
+      // Now initialize the app after scanning is complete
+      if (mounted) {
         await ref.read(appStartupControllerProvider.future);
+      }
+
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isLoading = false);
         showCupertinoDialog(
           context: context,
           builder: (context) => CupertinoAlertDialog(
             title: const Text('Error'),
-            content: Text('Failed to load music: $e'),
+            content: Text('Failed to load music:\n$e'),
             actions: [
               CupertinoDialogAction(
                 onPressed: () => Navigator.pop(context),
@@ -64,10 +66,6 @@ class _FirstTimeSetupScreenState extends ConsumerState<FirstTimeSetupScreen> {
             ],
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
