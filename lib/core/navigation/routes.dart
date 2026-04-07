@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:classipod/core/constants/keys.dart';
 import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:classipod/core/models/music_metadata.dart';
@@ -163,6 +165,7 @@ final routerProvider = Provider(
     initialLocation: Routes.splash.toString(),
     redirect: (context, state) {
       if (state.matchedLocation == Routes.setup.toString()) return null;
+      if (!kIsWeb && Platform.isIOS) return null;
       final hasCompletedSetup = ref
           .read(settingsPreferencesRepositoryProvider)
           .getHasCompletedSetup();
