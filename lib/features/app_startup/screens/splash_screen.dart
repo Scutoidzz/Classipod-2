@@ -42,8 +42,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen(splashControllerProvider, (_, state) async {
-      if (state.hasError) {
-        if (state.error is AudioPermissionDeniedException) {
+      final error = state.valueOrNull;
+      if (error != null && error is Exception) {
+        if (error is AudioPermissionDeniedException) {
           await Dialogs.showInfoDialog(
             context: context,
             title: context.localization.audioAccessPermissionTitle,
@@ -52,7 +53,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           await ref
               .read(splashControllerProvider.notifier)
               .requestStoragePermissions();
-        } else if (state.error is AudioPermissionPermanentlyDeniedException) {
+        } else if (error is AudioPermissionPermanentlyDeniedException) {
           await Dialogs.showInfoDialog(
             context: context,
             title: context
@@ -65,7 +66,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           await ref
               .read(splashControllerProvider.notifier)
               .requestStoragePermissions();
-        } else if (!state.hasError && context.mounted) {
+        } else if (error == null && context.mounted) {
           context.goNamed(Routes.menu.name);
         }
       }

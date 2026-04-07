@@ -119,11 +119,11 @@ class _AlbumReflectiveArtState extends State<AlbumReflectiveArt>
             Flexible(
               child: Image(
                 image: (widget.thumbnailPath != null)
-                    ? widget.isOnDevice
+                    ? (widget.isOnDevice
                           ? FileImage(File(widget.thumbnailPath!))
-                          : NetworkImage(widget.thumbnailPath!)
-                    : const AssetImage(Assets.defaultAlbumCoverImage),
-                errorBuilder: (_, _, _) => Image.asset(
+                          : NetworkImage(widget.thumbnailPath!))
+                    : const AssetImage(Assets.defaultAlbumCoverImage) as ImageProvider,
+                errorBuilder: (context, error, stackTrace) => Image.asset(
                   Assets.defaultAlbumCoverImage,
                   height: widget.imageWidth,
                   width: widget.imageWidth ?? double.infinity,
@@ -148,11 +148,11 @@ class _AlbumReflectiveArtState extends State<AlbumReflectiveArt>
                     flipY: true,
                     child: Image(
                       image: (widget.thumbnailPath != null)
-                          ? widget.isOnDevice
+                          ? (widget.isOnDevice
                                 ? FileImage(File(widget.thumbnailPath!))
-                                : NetworkImage(widget.thumbnailPath!)
-                          : const AssetImage(Assets.defaultAlbumCoverImage),
-                      errorBuilder: (_, _, _) => Image.asset(
+                                : NetworkImage(widget.thumbnailPath!))
+                          : const AssetImage(Assets.defaultAlbumCoverImage) as ImageProvider,
+                      errorBuilder: (context, error, stackTrace) => Image.asset(
                         Assets.defaultAlbumCoverImage,
                         height: widget.reflectedImageHeight,
                         width: widget.imageWidth != null

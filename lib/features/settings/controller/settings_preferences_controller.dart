@@ -54,8 +54,8 @@ class SettingsPreferencesControllerNotifier
       ),
       isTouchScreenEnabled: settingsPreferencesRepository
           .getTouchScreenEnabled(),
-      repeatMode: RepeatMode.values.byName(
-        settingsPreferencesRepository.getRepeatMode(),
+      repeatMode: AppRepeatMode.values.byName(
+        settingsPreferencesRepository.getAppRepeatMode(),
       ),
       vibrate: settingsPreferencesRepository.getVibrate(),
       clickWheelSound: settingsPreferencesRepository.getClickWheelSound(),
@@ -101,20 +101,20 @@ class SettingsPreferencesControllerNotifier
     });
   }
 
-  Future<void> setInitialRepeatMode() async {
+  Future<void> setInitialAppRepeatMode() async {
     switch (state.repeatMode) {
-      case RepeatMode.off:
+      case AppRepeatMode.off:
         await ref
             .read(audioPlayerServiceProvider.notifier)
             .setLoopMode(LoopMode.off);
         break;
-      case RepeatMode.one:
+      case AppRepeatMode.one:
         // in case app starts with repeat mode one, set the loop mode to all
         await ref
             .read(settingsPreferencesRepositoryProvider)
-            .setRepeatMode(repeatModeName: RepeatMode.all.name);
-        state = state.copyWith(repeatMode: RepeatMode.all);
-      case RepeatMode.all:
+            .setAppRepeatMode(repeatModeName: AppRepeatMode.all.name);
+        state = state.copyWith(repeatMode: AppRepeatMode.all);
+      case AppRepeatMode.all:
         await ref
             .read(audioPlayerServiceProvider.notifier)
             .setLoopMode(LoopMode.all);
@@ -217,25 +217,25 @@ class SettingsPreferencesControllerNotifier
         );
   }
 
-  Future<void> toggleRepeatMode() async {
+  Future<void> toggleAppRepeatMode() async {
     switch (state.repeatMode) {
-      case RepeatMode.off:
-        state = state.copyWith(repeatMode: RepeatMode.one);
+      case AppRepeatMode.off:
+        state = state.copyWith(repeatMode: AppRepeatMode.one);
         await ref
             .read(settingsPreferencesRepositoryProvider)
-            .setRepeatMode(repeatModeName: RepeatMode.one.name);
+            .setAppRepeatMode(repeatModeName: AppRepeatMode.one.name);
         break;
-      case RepeatMode.one:
-        state = state.copyWith(repeatMode: RepeatMode.all);
+      case AppRepeatMode.one:
+        state = state.copyWith(repeatMode: AppRepeatMode.all);
         await ref
             .read(settingsPreferencesRepositoryProvider)
-            .setRepeatMode(repeatModeName: RepeatMode.all.name);
+            .setAppRepeatMode(repeatModeName: AppRepeatMode.all.name);
         break;
-      case RepeatMode.all:
-        state = state.copyWith(repeatMode: RepeatMode.off);
+      case AppRepeatMode.all:
+        state = state.copyWith(repeatMode: AppRepeatMode.off);
         await ref
             .read(settingsPreferencesRepositoryProvider)
-            .setRepeatMode(repeatModeName: RepeatMode.off.name);
+            .setAppRepeatMode(repeatModeName: AppRepeatMode.off.name);
         break;
     }
     await ref
@@ -328,7 +328,7 @@ class SettingsPreferencesControllerNotifier
         .setTouchScreenEnabled(isTouchScreenEnabled: true);
     await ref
         .read(settingsPreferencesRepositoryProvider)
-        .setRepeatMode(repeatModeName: RepeatMode.off.name);
+        .setAppRepeatMode(repeatModeName: AppRepeatMode.off.name);
     await ref
         .read(settingsPreferencesRepositoryProvider)
         .setVibrate(isVibrateEnabled: true);

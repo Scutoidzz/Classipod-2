@@ -47,9 +47,9 @@ class _AnimatedAlbumArtScrollerState
         Random().nextInt(nonEmptyAlbums.length),
       );
       setState(() {
-        _albumArtImage = randomAlbum.isOnDevice()
+        _albumArtImage = (randomAlbum.isOnDevice()
             ? FileImage(File(randomAlbum.albumArtPath!))
-            : NetworkImage(randomAlbum.albumArtPath!);
+            : NetworkImage(randomAlbum.albumArtPath!)) as ImageProvider;
       });
     }
   }

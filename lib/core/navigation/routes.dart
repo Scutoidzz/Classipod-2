@@ -340,7 +340,7 @@ final routerProvider = Provider(
                                   reverseTransitionDuration: const Duration(
                                     milliseconds: 500,
                                   ),
-                                  transitionsBuilder: (context, _, _, child) =>
+                                  transitionsBuilder: (context, animation, secondaryAnimation, child) =>
                                       child,
                                   child: CoverFlowAlbumSelectionScreen(
                                     albumDetail: state.extra as AlbumModel,

@@ -57,11 +57,11 @@ class SettingsPreferencesRepository {
         true;
   }
 
-  String getRepeatMode() {
+  String getAppRepeatMode() {
     return _sharedPreferencesWithCache.getString(
           SharedPreferencesKeys.repeatMode.name,
         ) ??
-        RepeatMode.off.name;
+        AppRepeatMode.off.name;
   }
 
   bool getVibrate() {
@@ -147,7 +147,7 @@ class SettingsPreferencesRepository {
     );
   }
 
-  Future<void> setRepeatMode({required String repeatModeName}) async {
+  Future<void> setAppRepeatMode({required String repeatModeName}) async {
     return _sharedPreferencesWithCache.setString(
       SharedPreferencesKeys.repeatMode.name,
       repeatModeName,

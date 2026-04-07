@@ -105,11 +105,11 @@ class SearchListTile extends StatelessWidget {
                           (searchResult.searchResultType ==
                                   SearchResultType.album &&
                               imageFilePath != null)
-                          ? (searchResult.result as AlbumModel).isOnDevice()
+                          ? ((searchResult.result as AlbumModel).isOnDevice()
                                 ? FileImage(File(imageFilePath))
-                                : NetworkImage(imageFilePath)
-                          : const AssetImage(Assets.defaultAlbumCoverImage),
-                      errorBuilder: (_, _, _) => Image.asset(
+                                : NetworkImage(imageFilePath))
+                          : const AssetImage(Assets.defaultAlbumCoverImage) as ImageProvider,
+                      errorBuilder: (context, error, stackTrace) => Image.asset(
                         Assets.defaultAlbumCoverImage,
                         fit: BoxFit.cover,
                         height: 54,

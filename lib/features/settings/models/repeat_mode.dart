@@ -2,7 +2,7 @@ import 'package:classipod/core/extensions/build_context_extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:just_audio/just_audio.dart';
 
-enum RepeatMode {
+enum AppRepeatMode {
   off,
   one,
   all;
