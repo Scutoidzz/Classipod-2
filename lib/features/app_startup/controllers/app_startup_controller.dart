@@ -23,6 +23,8 @@ final appStartupControllerProvider = FutureProvider<void>((ref) async {
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
       ]),
+    ],
+    if (!kIsWeb && Platform.isAndroid) ...[
       JustAudioBackground.init(
         androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
         androidNotificationChannelName: 'ClassiPod Audio playback',
